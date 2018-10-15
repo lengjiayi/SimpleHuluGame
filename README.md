@@ -9,7 +9,7 @@
 ### 运行游戏
 
 &#160; &#160; &#160; &#160;通过双击ljy.jar运行游戏，进入如下开始界面后点击“**开始游戏**”开始游戏，点击右上角的"**X**"退出游戏。*("**X**"只会在鼠标离开背景区域时才会显示）*<br>
-![preframe](D:\LearnJava\docs\葫芦娃小游戏\运行截图\preframe.PNG)
+![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/preframe.PNG)
 
 ### 游戏基本操作
 &#160; &#160; &#160; &#160;本游戏的所有操作目前都由鼠标完成。点击进入游戏后的界面如下图：<br>
@@ -23,11 +23,11 @@
 **移动：**选中人物后点击游戏区域的空白区域即可令当前人物移动到该处，点击其他区域重新选择人物/取消选择。*(人类阵营遵循物理定律，先纵向移动再横向移动，当遇到敌人后发生碰撞。妖怪不遵循物理定律，随意移动)*<br>
 
 ##### 技能栏和属性框效果如下图：
-![preframe](D:\LearnJava\docs\葫芦娃小游戏\运行截图\gameframe.PNG)
+![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/gameframe.PNG)
 
-![preframe](D:\LearnJava\docs\葫芦娃小游戏\运行截图\move.gif)
+![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/move.gif)
 ##### 攻击效果如下图：
-![preframe](D:\LearnJava\docs\葫芦娃小游戏\运行截图\attack.gif)
+![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/attack.gif)
 ### 游戏攻略
 #### 关于人物
 &#160; &#160; &#160; &#160;每个角色都有不同的技能，其中橙色的二娃和黄色的三娃的普通攻击和必杀技为远程攻击，爷爷的攻击方式为远程为己方人物加HP，合理的利用不同人物的不同属性会获得意想不到的效果。<br>
