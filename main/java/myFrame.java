@@ -12,6 +12,8 @@ public class myFrame extends JFrame{        //进入游戏前的界面，模仿�
     private JLabel close;
     private JLabel start;
     private Font mfont=new Font("华文楷体",Font.BOLD,60);
+    private AutoPlayer ap;
+    private String fname;
 
     private Point pressedpoint;
     public myFrame(String filename)
@@ -86,22 +88,48 @@ public class myFrame extends JFrame{        //进入游戏前的界面，模仿�
         });
         background.add(close);
 
-        start=new JLabel("开始");     //开始游戏按键
-        start.setForeground(new Color(255,255-80,255-120));
-        start.setFont(mfont);
+        start=new JLabel();     //开始游戏按键
+        start.setBounds(width/2-width/6,height/10*4,width/3,width/6);
+        ImageIcon sticon=new ImageIcon(getClass().getResource("start.PNG"));
+        sticon.setImage(sticon.getImage().getScaledInstance(width/3,width/6,Image.SCALE_SMOOTH));
+        start.setIcon(sticon);
         start.setBackground(new Color(0,0,0,0));
-        start.setBounds(width/2-width/rate,height/2-width/rate/2,130,60);
         start.setVisible(true);
+        background.add(start);
         start.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 dispose();
-                Thread newframe=new Thread(new newFrame());
+                Thread newframe=new Thread(new newFrame(null));
                 newframe.start();
             }
         });
-        background.add(start);
+
+        JLabel readbtn = new JLabel();
+        myFrame mf=this;
+        readbtn.setBounds(width/2-width/6,height/10*5,width/3,width/6);
+        ImageIcon ldicon=new ImageIcon(getClass().getResource("load.PNG"));
+        ldicon.setImage(ldicon.getImage().getScaledInstance(width/3,width/6,Image.SCALE_SMOOTH));
+        readbtn.setIcon(ldicon);
+        readbtn.setBackground(new Color(0,0,0,0));
+        readbtn.setVisible(true);
+        background.add(readbtn);
+        readbtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                FileDialog fd = new FileDialog(mf, "打开", FileDialog.LOAD);
+                fd.setVisible(true);
+                if(fd.getDirectory()==null)
+                    fname=null;
+                else
+                    fname= fd.getDirectory()+fd.getFile();
+                dispose();
+                Thread newframe=new Thread(new newFrame(fname));
+                newframe.start();
+            }
+        });
 
         setVisible(true);
     }
@@ -118,13 +146,15 @@ public class myFrame extends JFrame{        //进入游戏前的界面，模仿�
     class newFrame implements Runnable    //游戏主界面
     {
         BattleField battle;
-        public newFrame()
+        public newFrame(String fname)
         {
+//            System.out.println(fname);
             JFrame frame = new JFrame("BattleField");
             frame.setTitle("葫芦娃兄弟阵法");
             frame.setResizable(false);
-            battle=new BattleField();
-            battle.father=frame;
+            battle=new BattleField(frame,fname);
+//            battle.father=frame;
+//            battle.readfrom=fname;
             frame.addMouseListener(battle.ms);
             frame.setContentPane(battle.battlefield);
             battle.battlefield.repaint();

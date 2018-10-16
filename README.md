@@ -1,4 +1,4 @@
-## *复盘所需要的文件读写部分未开始实现
+## *复盘所需要的文件读写部分于20181016初步实现
 
 # 葫芦娃兄弟
 
@@ -28,7 +28,18 @@
 ![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/move.gif)
 ##### 攻击效果如下图：
 ![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/attack.gif)
+### 保存和读取
+
+&#160;&#160;&#160;&#160;经过20181016日的努力，增加了保存和读取进度功能。
+
+- **保存：**在游戏界面右上角关闭按钮旁增加了保存按钮，点击会弹出文件选择器，并将当前进度保存在选择的文件中。
+![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/reload.PNG)
+
+- **读取：**在原先的基础上在开始界面增加了读取文件选项，点击后在弹出的文件选择器中选择之前保存的.xml文件即可开始复盘。
+![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/save.PNG)
+
 ### 游戏攻略
+
 #### 关于人物
 &#160; &#160; &#160; &#160;每个角色都有不同的技能，其中橙色的二娃和黄色的三娃的普通攻击和必杀技为远程攻击，爷爷的攻击方式为远程为己方人物加HP，合理的利用不同人物的不同属性会获得意想不到的效果。<br>
 

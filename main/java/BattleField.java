@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 public class BattleField {      //游戏主界面
 
     public JPanel battlefield;
+    public String readfrom;
     private Font mfont=new Font("华文楷体",Font.BOLD,40);
     AnimationHandler animationHandler;      //动画批处理器
     /* 角色 */
@@ -16,10 +17,13 @@ public class BattleField {      //游戏主界面
     private Brotherhood brotherhood;
 
     static int oneRound=3;                  //每回合步数，包括移动和攻击，用完则对手攻击，并进入下一回合
-    private Bots bot;                       //机器人控制器
+    public Bots bot;                       //机器人控制器
     public int myMove;                      //当前步数
     private JLabel MoveCount;               //用于显示剩余步数
     private boolean Bsorted=false;
+
+    public MySaver saver;
+    public AutoPlayer autoPlayer;
 
     public JFrame father;
     private TransparentPanel hlmask;        //用于高亮显示鼠标经过区域
@@ -45,6 +49,25 @@ public class BattleField {      //游戏主界面
         myFrame preframe=new myFrame("prebackground.PNG");
         preframe.setVisible(true);
     }
+
+    public BattleField(JFrame frame, String fname)
+    {
+        father=frame;
+        readfrom=fname;
+        autoPlayer=new AutoPlayer();
+        autoPlayer.battle=this;
+        autoPlayer.setFile(readfrom);
+        autoPlayer.addChat(brotherhood.cbs);
+        autoPlayer.addChat(grandpa);
+        autoPlayer.addChat(snake);
+        autoPlayer.addChat(scorption);
+        autoPlayer.addChat(scorption.troops);
+        Thread ap=new Thread(autoPlayer);
+        if(readfrom!=null)
+            ap.start();
+        System.out.println(readfrom);
+    }
+
     private void createUIComponents() throws Exception {
         // TODO: place custom component creation code here
         battlefield = new BackGroundPanel();
@@ -56,69 +79,7 @@ public class BattleField {      //游戏主界面
 
         battlefield.setBounds(0, 0, width, height);
         battlefield.setLayout(null);
-/*
- *不再使用的两个按钮，用于葫芦娃的排序和妖怪的变阵
-        actionButton button1 = new actionButton(1100, 500, 90, 80, "monsterhead.PNG", "monsterhead2.PNG");
-        button1.addMouseListener(new MouseListener() {          //负责蝎子精变换阵型的按钮
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (animationHandler.avaliable.get() == false)
-                    return;
-                scorption.changeFMT(-1);
-//                scorption.StandStill();
-                animationHandler.cmd.set(1);
-            }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-        battlefield.add(button1);
-        actionButton button2 = new actionButton(1000, 500, 90, 80, "humanhead.PNG", "humanhead2.PNG");
-        button2.addMouseListener(new MouseListener() {          //负责葫芦娃排队的按钮
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (animationHandler.avaliable.get() == false)
-                    return;
-                if (Bsorted)
-                    brotherhood.randomize();
-                else
-                    brotherhood.BubbleSort();
-                Bsorted = !Bsorted;
-//                scorption.StandStill();
-                animationHandler.cmd.set(1);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-        battlefield.add(button2);
-*/
         animationHandler = new AnimationHandler();
         /*创建角色*/
         Thread tmp;
@@ -168,6 +129,14 @@ public class BattleField {      //游戏主界面
         });
         battlefield.add(close);
 
+        saver=new MySaver(father);
+        saver.savebtn.setBounds(width-width/rate*2,0,width/rate,width/rate);
+        ImageIcon svicon=new ImageIcon(getClass().getResource("save.PNG"));
+        svicon.setImage(svicon.getImage().getScaledInstance(width/rate,width/rate,Image.SCALE_SMOOTH));
+        saver.savebtn.setIcon(svicon);
+        saver.savebtn.setBackground(new Color(0,0,0,0));
+        battlefield.add(saver.savebtn);
+
         hlmask = new TransparentPanel();
         hlmask.setBounds(((BackGroundPanel) battlefield).xstart, ((BackGroundPanel) battlefield).ystart, ((BackGroundPanel) battlefield).block.x, ((BackGroundPanel) battlefield).block.y);
         hlmask.setTransparency(.3f);
@@ -210,6 +179,7 @@ public class BattleField {      //游戏主界面
         JSP.getViewport().setOpaque(false);
         battlefield.add(JSP);
 
+
         ms=new MouseListener() {        //用于监听处理鼠标事件
             @Override
             public void mouseClicked(MouseEvent e) {        //点击时可能是选择人物或是人物移动
@@ -234,6 +204,7 @@ public class BattleField {      //游戏主界面
                         curChats.moveto(virtuleX,virtuleY);
                         animationHandler.cmd.set(1);
                         myMove--;
+                        saver.addMove(curChats.charno, new Point(virtuleX, virtuleY),-1);
                         updateCount();
                     }
                 }
@@ -253,7 +224,6 @@ public class BattleField {      //游戏主界面
             @Override
             public void mouseExited(MouseEvent e) {}
         };
-
     }
 
     public void updateCount(){      //更新显示剩余步数
@@ -268,7 +238,6 @@ public class BattleField {      //游戏主界面
         {
             try{
                 Thread.sleep(50);
-
             }catch(Exception e)
             {
                 e.printStackTrace();
@@ -337,7 +306,6 @@ public class BattleField {      //游戏主界面
 
     private boolean END(int winner) {           //游戏结束，弹出结束信息
         int width=battlefield.getWidth(),height=battlefield.getHeight();
-//        new gameEnd(width/4,height/4,width/2,height/2,father);
         new gameEnd(0,0,width,height,winner,father);
         return true;
     }

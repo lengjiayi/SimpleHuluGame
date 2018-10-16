@@ -9,7 +9,16 @@ public class Brotherhood{            //葫芦兄弟类
         //创造世界上的葫芦娃
         for(int i=0;i<CB_NUM;i++)
             cbs[i]=new CucurbitBoy(father, bt);
-        randomize();                  //最初葫芦娃们随机排列
+//        randomize();                  //最初葫芦娃们随机排列
+        swap(3,0);
+        swap(2,6);
+        swap(1,2);
+        for(int i=0;i<CB_NUM;i++) {
+            if(!cbs[i].alive)
+                continue;
+            cbs[i].setInnerPosition("兄弟们", i);
+            cbs[i].resort("兄弟们",positionX, positionY);
+        }
         for(int i=0;i<CB_NUM;i++) {
             Thread tmp = new Thread(cbs[i]);
             tmp.start();

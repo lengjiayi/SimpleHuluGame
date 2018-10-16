@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Charactors implements Runnable{       //角色类
     public String typename;        //每个角色有自己的名字
     public String basename;
+    public int charno;
     ImageIcon baseimg;                  //基本贴图
     ImageIcon movingimg;               //运动时贴图
     ImageIcon regularattack;           //常规攻击贴图
@@ -501,6 +502,7 @@ class Grandpa extends Charactors        //老爷爷，可以为葫芦娃远程�
     Grandpa(BackGroundPanel father, BattleField bt)
     {               //老爷爷初始时在战场左下角观战
         world=father;
+        charno=7;
         battle=bt;
         basename="grandpa";
         monster=false;
@@ -532,6 +534,7 @@ class CucurbitBoy extends Charactors        //葫芦娃类
         world=father;
         battle=bt;
         this.id=CucurbitBoys.values()[CucurbitBoy.nextid];
+        charno=nextid;
         remoteattack=id.IsRemote();
         maxHP=id.getHP();
         HP=maxHP;
@@ -584,10 +587,13 @@ class Roro extends Charactors           //小喽啰类
 {
     public int number;                  //小喽啰的编号
     private formations curFMT=null;     //小喽啰们当前应该站的阵型
+    public static int nextid=0;
     public Roro(BackGroundPanel father, BattleField bt){
         world=father;
         battle=bt;
         basename="Roro";
+        charno=nextid+9;
+        nextid++;
         load();
         testLabel.setSize(world.block.x,world.block.y);
         testLabel.setIcon(baseimg);
@@ -625,6 +631,7 @@ class Scorpion extends Charactors                       //蝎子精
         world=father;
         battle=bt;
         basename="scorption";
+        charno=9;
         load();
         testLabel.setSize(world.block.x,world.block.y);
         testLabel.setIcon(baseimg);
@@ -691,6 +698,7 @@ class Snake extends Charactors          //蛇精，可以为妖怪加血
         world=father;
         battle=bt;
         basename="snake";
+        charno=8;
         load();
         testLabel.setSize(world.block.x,world.block.y);
         testLabel.setIcon(baseimg);

@@ -68,6 +68,7 @@ class SelectionBar extends JPanel {      //一个侧边栏（技能选择框）�
                 if(tmpChats==null || tmpChats.avaliable.get()==false)
                     return;
                 father.myMove--;
+                father.saver.addMove(tmpChats.charno, new Point(-1, -1),1);
                 father.updateCount();
                 tmpChats.avaliable.set(false);
                 tmpChats.cmd.set(2);
@@ -82,6 +83,7 @@ class SelectionBar extends JPanel {      //一个侧边栏（技能选择框）�
                 if(tmpChats==null || tmpChats.avaliable.get()==false)
                     return;
                 father.myMove--;
+                father.saver.addMove(tmpChats.charno, new Point(-1, -1),2);
                 father.updateCount();
                 tmpChats.avaliable.set(false);
                 tmpChats.cmd.set(3);
@@ -98,6 +100,7 @@ class SelectionBar extends JPanel {      //一个侧边栏（技能选择框）�
                 if(tmpChats==null || tmpChats.avaliable.get()==false)
                     return;
                 father.myMove--;
+                father.saver.addMove(tmpChats.charno, new Point(-1, -1),3);
                 father.updateCount();
                 tmpChats.avaliable.set(false);
                 tmpChats.cmd.set(4);
