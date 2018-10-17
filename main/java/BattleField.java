@@ -64,7 +64,7 @@ public class BattleField {      //游戏主界面
         autoPlayer.addChat(scorption.troops);
         Thread ap=new Thread(autoPlayer);
         if(readfrom!=null)
-            ap.start();
+            ap.start();             //如果从读取文件按钮进入，则首先你执行复盘。
         System.out.println(readfrom);
     }
 

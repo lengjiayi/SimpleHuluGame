@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class AutoPlayer implements Runnable{
+public class AutoPlayer implements Runnable{        //实现复盘的自动播放程序
     private String readfrom = null;
     private Document docs;
     private Element root;
@@ -26,7 +26,7 @@ public class AutoPlayer implements Runnable{
 
     public String getFname(){ return readfrom; }
 
-    public void init() {
+    public void init() {        //打开保存游戏信息的xml文件
         if (readfrom == null)
             return;
         DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
@@ -42,7 +42,7 @@ public class AutoPlayer implements Runnable{
         System.out.println("init ready");
     }
 
-    public void addChat(Charactors newchat)     //添加角色
+    public void addChat(Charactors newchat)     //添加角色，用于自动播放时操作
     {
         int oldlen=chats.length;
         Charactors tmp[]=new Charactors[oldlen+1];
@@ -97,17 +97,17 @@ public class AutoPlayer implements Runnable{
         waitforReady();
         System.out.println("start read");
         NodeList rounds=root.getChildNodes();
-        for(int i=1;i<rounds.getLength();i++)
+        for(int i=1;i<rounds.getLength();i++)       //复现所有的回合
         {
             NodeList moves=rounds.item(i).getChildNodes();
-            for(int j=0;j<moves.getLength();j++) {
+            for(int j=0;j<moves.getLength();j++) {          //复现每一回合所有的操作
                 Node thismove=moves.item(j);
-                int Chatno=Integer.parseInt(thismove.getAttributes().getNamedItem("Chatno").getNodeValue());
-                String type=thismove.getAttributes().getNamedItem("type").getNodeValue();
+                int Chatno=Integer.parseInt(thismove.getAttributes().getNamedItem("Chatno").getNodeValue());        //被操作的人物
+                String type=thismove.getAttributes().getNamedItem("type").getNodeValue();           //操作类型
                 int value=0;
                 if(type.equals("attack"))
                     value=Integer.parseInt(thismove.getFirstChild().getNodeValue());
-                Point dst=new Point();
+                Point dst=new Point();          //移动的目的地
                 dst.x=Integer.parseInt(thismove.getAttributes().getNamedItem("X").getNodeValue());
                 dst.y=Integer.parseInt(thismove.getAttributes().getNamedItem("Y").getNodeValue());
                 String debugstr="\t";
@@ -119,13 +119,13 @@ public class AutoPlayer implements Runnable{
                 battle.debug.append(debugstr);
 
                 Charactors tmpchat=null;
-                for(Charactors x:chats)
+                for(Charactors x:chats)         //从人物列表中找到本次操作的人物
                 {
                     if(x.charno==Chatno)
                         tmpchat=x;
                 }
 
-                if(type.equals("walk"))
+                if(type.equals("walk"))     //执行操作
                 {
                     tmpchat.moveto(dst.x,dst.y);
                     battle.animationHandler.cmd.set(1);
@@ -142,7 +142,7 @@ public class AutoPlayer implements Runnable{
                 }
             }
             battle.debug.append("--Round--\n");
-            battle.bot.nextMove();
+            battle.bot.nextMove();      //一个回合结束，妖怪做出对应的动作
             waitforReady();
         }
     }

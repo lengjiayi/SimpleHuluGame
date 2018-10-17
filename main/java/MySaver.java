@@ -26,7 +26,7 @@ public class MySaver {
     private Element root;
     private Element round;
     private int countmove;
-    public static void main(String[] args) {
+    public static void main(String[] args) {        //调试所用
         JFrame frame = new JFrame("test");
         frame.setResizable(false);
 
@@ -47,7 +47,7 @@ public class MySaver {
         savebtn = new JButton();
         savebtn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {        //用于保存的按钮
                 super.mouseClicked(e);
                 FileDialog fd = new FileDialog(frame, "保存", FileDialog.SAVE);
                 fd.setVisible(true);
@@ -58,7 +58,7 @@ public class MySaver {
         });
     }
 
-    public void init() {
+    public void init() {            //创建并打开xml文件
         DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
         DocumentBuilder db;
         try {
@@ -66,7 +66,7 @@ public class MySaver {
             docs = db.newDocument();
             root = docs.createElement("battle");
 
-            String time = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+            String time = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());       //写入储存时间信息
             Element ctime = docs.createElement("ctime");
             Text m = docs.createTextNode(time);
             ctime.appendChild(m);
@@ -78,7 +78,7 @@ public class MySaver {
         }
     }
 
-    public void addMove(int chatno, Point dst, int attack)
+    public void addMove(int chatno, Point dst, int attack)          //向xml中加入一次操作信息
     {
         countmove=countmove%3;
         if(countmove==0) {
@@ -99,7 +99,7 @@ public class MySaver {
         countmove++;
     }
 
-    public void save2file(){
+    public void save2file(){        //写入文件
         if (saveto == null)
             return;
         if(countmove!=0)

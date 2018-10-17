@@ -108,7 +108,7 @@ public class myFrame extends JFrame{        //进入游戏前的界面，模仿�
 
         JLabel readbtn = new JLabel();
         myFrame mf=this;
-        readbtn.setBounds(width/2-width/6,height/10*5,width/3,width/6);
+        readbtn.setBounds(width/2-width/6,height/10*5,width/3,width/6);         //读取文件按钮
         ImageIcon ldicon=new ImageIcon(getClass().getResource("load.PNG"));
         ldicon.setImage(ldicon.getImage().getScaledInstance(width/3,width/6,Image.SCALE_SMOOTH));
         readbtn.setIcon(ldicon);
@@ -119,7 +119,7 @@ public class myFrame extends JFrame{        //进入游戏前的界面，模仿�
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                FileDialog fd = new FileDialog(mf, "打开", FileDialog.LOAD);
+                FileDialog fd = new FileDialog(mf, "打开", FileDialog.LOAD);      //点击时会弹出FileDialog选择文件
                 fd.setVisible(true);
                 if(fd.getDirectory()==null)
                     fname=null;

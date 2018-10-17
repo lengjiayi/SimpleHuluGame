@@ -35,7 +35,7 @@
 - **保存：**在游戏界面右上角关闭按钮旁增加了保存按钮，点击会弹出文件选择器，并将当前进度保存在选择的文件中。
 ![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/reload.PNG)
 
-- **读取：**在原先的基础上在开始界面增加了读取文件选项，点击后在弹出的文件选择器中选择之前保存的.xml文件即可开始复盘。
+- **读取：**在原先的基础上在开始界面增加了读取文件选项，点击后在弹出的文件选择器中选择之前保存的.xml文件即可开始复盘。*(testbattle.xml为我一次游戏的结果，可以作为测试读取)*
 ![preframe](https://github.com/lengjiayi/SimpleHuluGame/blob/master/运行截图/save.PNG)
 
 ### 游戏攻略
