@@ -29,7 +29,7 @@ public class Charactor implements Runnable {
     public boolean alive=true;
     /** 是否为妖怪阵营*/
     public boolean monster=false;
-    /** s是否具有远程攻击属性*/
+    /** 是否具有远程攻击属性*/
     public boolean remoteattack=false;
     /** 是否为治疗系角色*/
     public boolean heal=false;
