@@ -1,4 +1,4 @@
-package sample;
+package com.ljy.java;
 
 import javafx.scene.image.Image;
 

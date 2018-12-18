@@ -1,4 +1,4 @@
-package sample;
+package com.ljy.java;
 
 class dPoint{
     dPoint(double x, double y){ this.x = x; this.y = y; }

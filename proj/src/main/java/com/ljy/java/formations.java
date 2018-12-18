@@ -1,4 +1,4 @@
-package sample;
+package com.ljy.java;
 
 public class formations //阵型类
 {

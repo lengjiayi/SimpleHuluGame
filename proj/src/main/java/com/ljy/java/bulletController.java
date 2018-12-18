@@ -1,4 +1,4 @@
-package sample;
+package com.ljy.java;
 
 public class bulletController{
     static final int ATTACK_REG =0;

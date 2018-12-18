@@ -1,4 +1,4 @@
-package sample;
+package com.ljy.java;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;

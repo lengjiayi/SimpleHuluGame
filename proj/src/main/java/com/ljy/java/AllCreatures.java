@@ -1,4 +1,4 @@
-package sample;
+package com.ljy.java;
 
 import jdk.nashorn.internal.runtime.regexp.joni.Config;
 

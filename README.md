@@ -1,5 +1,7 @@
 # 葫芦娃小游戏
 _使用javaFx作为框架编写,并根据MVC框架将视图和控制分离_ <br>
+_双击SimpleHuluGameFx.jar运行游戏_ <br>
+_或进入proj文件夹使用命令`mvn package`编译，`java -jar target\hulagame-1.0-SNAPSHOT.jar`运行游戏_ <br>
 ## 1.使用方法
 ### 1.1 运行游戏
 &nbsp;&nbsp;&nbsp;&nbsp;通过双击ljy.jar运行游戏，进入如下准备界面<br>
