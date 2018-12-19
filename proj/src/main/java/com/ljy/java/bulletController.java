@@ -51,8 +51,11 @@ public class bulletController{
         //非远程攻击
         if(!chat.remoteattack || type == ATTACK_AOE_1 || type == ATTACK_AOE_2 || type == ATTACK_AOE_3)
         {
-            target = virtualField.cmap[cur.y][cur.x];
-            if(target != null)
+            if(cur.y>=0 && cur.y<virtualField.height && cur.x>=0 && cur.x<virtualField.width)
+                target = virtualField.cmap[cur.y][cur.x];
+//            else
+//                System.out.println(chat.name+cur.x+","+cur.y);
+            if(target != null && ((target.monster!=chat.monster && !chat.heal) || (target.monster==chat.monster && chat.heal)))
                 target.injured(injuery);
             try {
                 if (type == ATTACK_AOE_1 || type == ATTACK_AOE_2 || type == ATTACK_AOE_3)
@@ -81,6 +84,7 @@ public class bulletController{
         if(!chat.monster)
         {
             while (true) {
+//                System.out.println(chat.name+aimx);
                 if (aimx < virtualField.width &&
                         (virtualField.cmap[cur.y][aimx] == null ||
                                 !virtualField.cmap[cur.y][aimx].alive ||

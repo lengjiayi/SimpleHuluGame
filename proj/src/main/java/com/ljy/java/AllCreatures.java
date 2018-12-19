@@ -101,6 +101,7 @@ class Scorpion extends Charactor
     {
         if(!alive)        //如果蝎子精战死则所有喽啰群龙无首，不再移动
             return;
+        avaliable.set(false);
         curFMT=index%learnedFormations.length;
         if(curFMT<0)
             curFMT = learnedFormations.length-1;
@@ -118,6 +119,35 @@ class Scorpion extends Charactor
                 troops[i].cmd.set(1);
             }
         }
+    }
+    @Override
+    protected void Attack1() {
+        for(Charactor x : troops)
+        {
+            if(x.alive && x.avaliable.getAndSet(false))
+                x.cmd.set(2);
+        }
+        super.Attack1();
+    }
+
+    @Override
+    protected void Attack2()
+    {
+        MP -= mpcost;
+        if(MP<mpcost)           //MP不足时不能再使用对群攻击
+        {
+            aoeavaliable=false;
+            avaliable.set(true);
+        }
+        else
+        {
+            bulletController.start(this, bulletController.ATTACK_AOE_1);
+            bulletController.start(this, bulletController.ATTACK_AOE_2);
+            bulletController.start(this, bulletController.ATTACK_AOE_3);
+        }
+        if(checkFmtValid(curFMT+1))
+            changeFMT(++curFMT);
+        avaliable.set(true);
     }
 
     @Override

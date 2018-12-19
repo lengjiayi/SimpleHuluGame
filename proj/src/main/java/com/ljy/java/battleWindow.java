@@ -36,11 +36,27 @@ public class battleWindow extends Application{
     //MARK: battle relatives
     battleManager manager;
     String loadfile;
+    boolean monster = false;
+    boolean autofight = false;
 
 
-    public void switchShow(String loadfile) throws Exception
+    public void switchShow(String loadfile, int playtype) throws Exception
     {
         this.loadfile = loadfile;
+        if(loadfile==null){
+            switch(playtype)
+            {
+                case prepareWindow.PLAYMODE_HUMAN:
+                    monster = false;
+                    break;
+                case prepareWindow.PLAYMODE_MONSTER:
+                    monster = true;
+                    break;
+                case prepareWindow.PLAYMODE_GOD:
+                    autofight = true;
+                    break;
+            }
+        }
         loadComponents();
         start(stage);
     }
@@ -67,7 +83,7 @@ public class battleWindow extends Application{
         pane.getChildren().add(BlockMask);
 
         canvas = new Canvas(Configs.WIN_WIDTH, Configs.WIN_HEIGHT);
-        manager = new battleManager(this, loadfile);
+        manager = new battleManager(this, loadfile, monster, autofight);
         sbar.bmanager = manager;
 
         canvas.setLayoutX(0);
@@ -92,6 +108,8 @@ public class battleWindow extends Application{
         hint = new StepHint();
         hint.setLayoutX(Configs.LEFT_MARGIN + Configs.B_SIZE*4);
         hint.setLayoutY(Configs.TOP_MARAGIN/2);
+        if(monster)
+            hint.set(2);
         pane.getChildren().add(hint);
 
         ImageView saveimg = new ImageView(Configs.SysIcons.get(Configs.INDEX_SAVE));

@@ -30,6 +30,15 @@ public class virtualField {
                 cmap[i][j]=null;
     }
 
+    public static void clear()
+    {
+        if(cmap==null)
+            return;
+        for(int i=0;i<height;i++)
+            for(int j=0;j<width;j++)
+                cmap[i][j]=null;
+    }
+
     /** 将虚拟横坐标转化为画布上的横坐标*/
     public static int vxTorx(int vx)
     { return Configs.LEFT_MARGIN+vx*Configs.B_SIZE; }
@@ -46,6 +55,8 @@ public class virtualField {
     public static int ryTovy(double ry)
     { return (int)(ry-Configs.TOP_MARAGIN+Configs.B_SIZE/2)/Configs.B_SIZE; }
 
+    public static iPoint vpTorp(iPoint loc)
+    { return vpTorp(loc.x, loc.y); }
     /** 将虚拟坐标转化为画布上的坐标*/
     public static iPoint vpTorp(int vx, int vy)
     {

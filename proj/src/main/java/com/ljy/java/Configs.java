@@ -45,6 +45,11 @@ public final class Configs {
     public static final int INDEX_MONSTERHEAD = 17;
     public static final int INDEX_HUMANCABIN = 18;
     public static final int INDEX_MONSTERCAVE = 19;
+    public static final int INDEX_PREPAREGACKGROUND = 20;
+    public static final int INDEX_HUMANHEAD2 = 21;
+    public static final int INDEX_MONSTERHEAD2 = 22;
+    public static final int INDEX_TWOPLAYER = 23;
+    public static final int INDEX_AUTOPLAY = 24;
 
     //MARK: 其他UI布局相关的数值属性
     public static int WIN_HEIGHT;
@@ -98,6 +103,11 @@ public final class Configs {
         SysIcons.add(new Image("monsterhead.PNG"));
         SysIcons.add(new Image("humanhouse.PNG"));
         SysIcons.add(new Image("mcave.PNG"));
+        SysIcons.add(new Image("preparebackground.PNG"));
+        SysIcons.add(new Image("humanhead2.PNG"));
+        SysIcons.add(new Image("monsterhead2.PNG"));
+        SysIcons.add(new Image("tpmode.PNG"));
+        SysIcons.add(new Image("automode.PNG"));
 
         Toolkit kit=Toolkit.getDefaultToolkit();
         Dimension screenSize=kit.getScreenSize();

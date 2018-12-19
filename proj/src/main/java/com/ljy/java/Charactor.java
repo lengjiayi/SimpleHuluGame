@@ -162,7 +162,11 @@ public class Charactor implements Runnable {
     {
         MP -= mpcost;
         if(MP<mpcost)           //MP不足时不能再使用对群攻击
+        {
             aoeavaliable=false;
+            avaliable.set(true);
+            return;
+        }
         bulletController.start(this, bulletController.ATTACK_AOE_1);
         bulletController.start(this, bulletController.ATTACK_AOE_2);
         bulletController.start(this, bulletController.ATTACK_AOE_3);
@@ -174,7 +178,7 @@ public class Charactor implements Runnable {
         bulletController.start(this, bulletController.ATTACK_ZXC);
         avaliable.set(true);
     }
-    public void injured(int cost)       //受伤并进行死亡判定
+    public synchronized void injured(int cost)       //受伤并进行死亡判定
     {
 //        System.out.println(name + cost);
         if(cost<0 && HP-cost>maxHP)     //恢复血量不会超过最大值

@@ -74,14 +74,27 @@ public class Main extends Application {
 
     private void SwitchWindows(String loadfile)
     {
-        battleWindow nextWin = new battleWindow();
-        try {
-            nextWin.switchShow(loadfile);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(loadfile == null)
+        {
+            prepareWindow nextWin = new prepareWindow();
+            try {
+                nextWin.switchShow();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (stage != null)
+                stage.close();
         }
-        if(stage != null)
-            stage.close();
+        else {
+            battleWindow nextWin = new battleWindow();
+            try {
+                nextWin.switchShow(loadfile,0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (stage != null)
+                stage.close();
+        }
     }
 
     @Override

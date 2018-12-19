@@ -2,11 +2,8 @@ package com.ljy.java;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
 import javafx.util.Duration;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,14 +18,19 @@ public class battleManager{
     ArrayList<Charactor> creatures = new ArrayList<>();
     /** 当前选中的角色*/
     Charactor ChatSelected = null;
+    /** 当前控制的阵营*/
+    boolean monster = true;
+    boolean autofight = false;
+    int player = 1;
     /** 机器人玩家*/
-    Bot bot = null;
+    mBot mBot = null;
+    hBot hBot = null;
     /** 玩家剩余步数*/
-    protected int stepRemain = 3;
+    protected int stepRemain = 0;
     /** 当前玩家是否可以执行操作*/
     protected AtomicBoolean bind = new AtomicBoolean(true);
     /** 游戏是否已经结束*/
-    protected boolean End = false;
+    protected AtomicBoolean End = new AtomicBoolean(false);
     protected String loadfile;
     boolean autoplaying = false;
     AutoPlayer autoPlayer = null;
@@ -36,14 +38,16 @@ public class battleManager{
     static final int ACTION_CLICKED = 0;
     static final int ACTION_MOVEABOVE = 1;
 
-    public battleManager(battleWindow view, String loadfile)
+    public battleManager(battleWindow view, String loadfile, boolean monster, boolean autofight)
     {
         this.view = view;
         this.loadfile = loadfile;
+        this.monster = monster;
+        this.autofight = autofight;
         if(loadfile!=null)
             autoplaying = true;
         outLookManager = new OutLookManager(this);
-
+        stepRemain = monster?2:3;
         if(autoplaying)
             autoPlayer = new AutoPlayer(loadfile, this);
 
@@ -69,6 +73,8 @@ public class battleManager{
             bind.set(false);
             if(autoplaying)
                 new Thread(autoPlayer).start();
+            if(autofight)
+                Fight();
         });
         t.start();
     }
@@ -90,11 +96,14 @@ public class battleManager{
 
     /** 添加所有的人物*/
     public void addCreatures() throws Exception {
-        addCharactor(new Grandpa(-1,3,0, virtualField.height-1));
-        Thread tmpthread;
+        Grandpa grandpa = new Grandpa(-1,3,0,virtualField.height-1);
+        addCharactor(grandpa);
+        CucurbitBoy[] brothers = new CucurbitBoy[7];
         for(int i=0;i<7;i++) {
-            addCharactor(new CucurbitBoy(-1, 3, 1, i));
+            brothers[i] = new CucurbitBoy(-1, 3, 1, i);
+            addCharactor(brothers[i]);
         }
+        hBot = new hBot(brothers, grandpa, this);
         Snake snake = new Snake(10,3,9,0);
         addCharactor(snake);
         Scorpion scorpion = new Scorpion(10,3,9,4);
@@ -102,7 +111,7 @@ public class battleManager{
         addCharactor(scorpion);
         for(Roro x:scorpion.troops)
             addCharactor(x);
-        bot = new Bot(scorpion, snake, this);
+        mBot = new mBot(scorpion, snake, this);
     }
 
     /** 添加所有人物的攻击效果*/
@@ -122,6 +131,9 @@ public class battleManager{
 
     public Charactor newAction(iPoint loc, int type)
     {
+        //自动战斗模式下不能控制角色
+        if(type == ACTION_CLICKED && autofight)
+            return null;
         //重放时不能控制角色
         if(type == ACTION_CLICKED && autoplaying)
             return null;
@@ -134,13 +146,13 @@ public class battleManager{
                 {
                     if(type == ACTION_CLICKED)
                         ChatSelected = x;
-                    if(type == ACTION_MOVEABOVE || (!bind.get() && !x.monster))
+                    if(type == ACTION_MOVEABOVE || (!bind.get() && x.monster==monster))
                         return x;
                  }
             }
         }
         if(type == ACTION_CLICKED) {
-            if(ChatSelected!=null && ChatSelected.monster)
+            if(ChatSelected!=null && ChatSelected.monster!=monster)
                 ChatSelected = null;
             //TODO: move curChat to this location
             if(!bind.get() && ChatSelected != null)
@@ -158,7 +170,7 @@ public class battleManager{
     /** 玩家步数减少1，并且判断是否轮到敌人进攻*/
     public void stepDecrease()
     {
-        if(End)
+        if(End.get())
             return;
         stepRemain--;
         view.hint.set(stepRemain);
@@ -166,6 +178,7 @@ public class battleManager{
         {
             bind.set(true);
             new Thread(()->{
+                //等待所有角色完成当前操作
                 while(true)
                 {
                     try {
@@ -186,7 +199,10 @@ public class battleManager{
                         break;
                 }
 
-                bot.nextMove();
+                if(!monster)
+                    mBot.nextMove();
+                else
+                    hBot.nextMove();
 
                 while(true)
                 {
@@ -195,7 +211,9 @@ public class battleManager{
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(bot.finish.get())
+                    if(!monster && mBot.finish.get())
+                        break;
+                    if(monster && hBot.finish.get())
                         break;
                 }
 
@@ -206,15 +224,48 @@ public class battleManager{
                 virtualField.cmaplock.unlock();
                 bind.set(false);
             }).start();
-            stepRemain = 3;
+            stepRemain = monster?2:3;
             view.hint.set(stepRemain);
         }
     }
 
+    /** 自动战斗模式*/
+    protected void Fight()
+    {
+        boolean mstep = false;
+        while(!End.get())
+        {
+            if(mstep)
+                mBot.nextMove();
+            else
+                hBot.nextMove();
+            while(true)
+            {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!mstep && hBot.finish.get())
+                    break;
+                if(mstep && mBot.finish.get())
+                    break;
+            }
+            virtualField.cmaplock.lock();
+            virtualField.clear();
+            for(Charactor x:creatures)
+                if(x.alive)
+                    virtualField.cmap[virtualField.ryTovy(x.PositionY.get())][virtualField.rxTovx(x.PositionX.get())] = x;
+            virtualField.cmaplock.unlock();
+            mstep = !mstep;
+        }
+    }
+
+    /** 游戏结束*/
     public void GameEnd(boolean monster)
     {
 //        savestack.saveToFile("tmp.xml");
-        End = true;
+        End.set(true);
         Platform.runLater(()-> {
             view.endMask.whoWin(monster);
             view.endMask.setVisible(true);

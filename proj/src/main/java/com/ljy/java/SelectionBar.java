@@ -47,7 +47,7 @@ public class SelectionBar extends Pane{
         regularAttack.setLayoutY(Configs.SBAR_HEIGHT/5*2 - Configs.SBAR_HEIGHT/10);
         regularAttack.setLayoutX(Configs.SBAR_WIDTH/10);
         regularAttack.setOnMouseClicked((MouseEvent)->{
-            if(curChat!=null && curChat.avaliable.getAndSet(false)) {
+            if(curChat!=null && curChat.avaliable.getAndSet(false) && (bmanager==null || !bmanager.bind.get())) {
                 if(bmanager!=null)
                     bmanager.stepDecrease();
                 bmanager.savestack.addMove(curChat.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK1);
@@ -62,7 +62,7 @@ public class SelectionBar extends Pane{
         AOEAttack.setLayoutY(Configs.SBAR_HEIGHT/5*3 - Configs.SBAR_HEIGHT/10);
         AOEAttack.setLayoutX(Configs.SBAR_WIDTH/10);
         AOEAttack.setOnMouseClicked((MouseEvent)->{
-            if(curChat!=null && curChat.avaliable.getAndSet(false)) {
+            if(curChat!=null && curChat.avaliable.getAndSet(false) && (bmanager==null || !bmanager.bind.get())) {
                 if(bmanager!=null)
                     bmanager.stepDecrease();
                 bmanager.savestack.addMove(curChat.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK2);
@@ -77,7 +77,7 @@ public class SelectionBar extends Pane{
         ZXCAttack.setLayoutY(Configs.SBAR_HEIGHT/5*4 - Configs.SBAR_HEIGHT/10);
         ZXCAttack.setLayoutX(Configs.SBAR_WIDTH/10);
         ZXCAttack.setOnMouseClicked((MouseEvent)->{
-            if(curChat!=null && curChat.avaliable.getAndSet(false)) {
+            if(curChat!=null && curChat.avaliable.getAndSet(false) && (bmanager==null || !bmanager.bind.get())) {
                 if(bmanager!=null)
                     bmanager.stepDecrease();
                 bmanager.savestack.addMove(curChat.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK3);
