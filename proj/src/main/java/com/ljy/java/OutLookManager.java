@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 import javax.swing.text.Position;
@@ -47,6 +48,31 @@ public class OutLookManager implements Runnable{
             GraphicsContext gc = battle.view.canvas.getGraphicsContext2D();
             Platform.runLater(()->{
                 gc.clearRect(0,0,Configs.WIN_WIDTH, Configs.WIN_HEIGHT);
+            });
+
+            Platform.runLater(()->{
+            for(int j=0;j<virtualField.height;j++)
+                for(int i=0;i<virtualField.width;i++)
+                {
+                    virtualField.cmaplock.lock();
+                    Charactor chat = virtualField.cmap[j][i];
+                    virtualField.cmaplock.unlock();
+                    if(chat==null || !chat.alive)
+                    {
+                        gc.setFill(Color.WHITE);
+                        gc.fillRect(i*10,j*10,10,10);
+                    }
+                    else if(chat.monster)
+                    {
+                        gc.setFill(Color.RED);
+                        gc.fillRect(i*10,j*10,10,10);
+                    }
+                    else
+                    {
+                        gc.setFill(Color.BLUE);
+                        gc.fillRect(i*10,j*10,10,10);
+                    }
+                }
             });
 
             for (Charactor x : creatures) {

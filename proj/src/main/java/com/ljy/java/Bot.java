@@ -1,5 +1,7 @@
 package com.ljy.java;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Bot {
 
     //MARK: 治疗等级
@@ -8,23 +10,28 @@ public class Bot {
     static final int HEALLEVEL_GROUP = 2;
     static final int HEALLEVEL_EMERGENT = 3;
 
+    public AtomicBoolean finish = new AtomicBoolean(true);
+
+    private battleManager bmanager;
     private Scorpion scorption;
     private Snake snake;
-
 
     /** 需要治疗的紧急程度*/
     private int heallevel = 0;
     private int count = 0;
+    private int curfmt = 0;
 
-    public Bot(Scorpion s, Snake sn)
+    public Bot(Scorpion s, Snake sn, battleManager bmanager)
     {
         scorption=s;
         snake=sn;
+        this.bmanager = bmanager;
     }
 
     /** 集体普通攻击*/
     private void GroupAttack()
     {
+        bmanager.savestack.addMove(scorption.IdNo, 0, 0, SaveStack.SAVETYPE_GROUPATTACH);
         for(Charactor x: scorption.troops)
         {
             if(x.alive && x.avaliable.getAndSet(false)) {
@@ -39,7 +46,10 @@ public class Bot {
     private void  nFMT(int index)
     {
         if (scorption.alive && scorption.avaliable.getAndSet(false)) {
-            scorption.changeFMT(index);
+            if(scorption.checkFmtValid(index)) {
+                bmanager.savestack.addMove(scorption.IdNo, 0, 0, SaveStack.SAVETYPE_CFMT, index);
+                scorption.changeFMT(index);
+            }
         }
     }
 
@@ -47,6 +57,7 @@ public class Bot {
     private void ZXC()
     {
         if(scorption.alive && scorption.zxcavaliable && scorption.avaliable.getAndSet(false)) {
+            bmanager.savestack.addMove(scorption.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK3);
             scorption.cmd.set(4);
         }
     }
@@ -65,6 +76,7 @@ public class Bot {
                 if(scorption.maxHP-scorption.HP>=80 && snake.zxcavaliable)
                     heallevel=HEALLEVEL_EMERGENT;
                 snake.moveto(virtualField.vpTorp(vloc.x + 1, vloc.y));
+                bmanager.savestack.addMove(snake.IdNo, vloc.x + 1, vloc.y, SaveStack.SAVETYPE_MOVE);
                 snake.cmd.set(1);
                 return;
             }
@@ -76,10 +88,15 @@ public class Bot {
             if(x.alive && x.HP<x.maxHP && virtualField.cmap[vloc.y][vloc.x + 1]==null) {
                 heallevel=HEALLEVEL_REGULAR;
                 snake.moveto(virtualField.vpTorp(vloc.x + 1, vloc.y));
+                bmanager.savestack.addMove(snake.IdNo, vloc.x + 1, vloc.y, SaveStack.SAVETYPE_MOVE);
                 snake.cmd.set(1);
                 return;
             }
         }
+        snake.moveto(virtualField.vpTorp(Configs.B_WNUM-1, 0));
+        bmanager.savestack.addMove(snake.IdNo, Configs.B_WNUM-1, 0, SaveStack.SAVETYPE_MOVE);
+        snake.cmd.set(1);
+        return;
     }
 
     /** 判断蝎子精是否应该发大招*/
@@ -125,6 +142,7 @@ public class Bot {
     /** 机器人做出下一步行为*/
     public void nextMove()
     {
+        finish.set(false);
         count++;
         count=count%100;
         if(count>2 && letsZXC())           //如果当前满足条件则放大招。为了降低难度，前两个回合不会放大招。
@@ -133,23 +151,38 @@ public class Bot {
             GroupAttack();                  //普通攻击
         waitforReady();
 
-        if(count%3==0 || scorption.HP<=70)        //蝎子精胆子很小，如果伤害过多就会变阵退到后面
-            if(scorption.HP<=70 && scorption.curFMT!=2) {
-                nFMT(2);
-            }else if(scorption.HP>70)
-                nFMT(-1);
-        waitforReady();
-
         if(snake.alive) {       //蛇精每个回合负责在最后治疗伤员
             heal();
-        waitforReady();
+            waitforReady();
             if(heallevel!=HEALLEVEL_NONEED) {
                 snake.avaliable.set(false);
                 if(heallevel==HEALLEVEL_REGULAR)
+                {
+                    bmanager.savestack.addMove(snake.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK1);
                     snake.cmd.set(2);
+                }
                 else
+                {
+                    bmanager.savestack.addMove(snake.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK3);
                     snake.cmd.set(4);
+                }
             }
+            waitforReady();
+            snake.moveto(virtualField.vpTorp(Configs.B_WNUM-1, 0));
+            bmanager.savestack.addMove(snake.IdNo, Configs.B_WNUM-1, 0, SaveStack.SAVETYPE_MOVE);
+            snake.cmd.set(1);
+            waitforReady();
         }
+
+        if(true)        //蝎子精胆子很小，如果伤害过多就会变阵退到后面
+//        if(count%3==0 || scorption.HP<=70)        //蝎子精胆子很小，如果伤害过多就会变阵退到后面
+            if(scorption.HP<=70 && scorption.curFMT!=2) {
+                nFMT(2);
+            }else if(scorption.HP>70)
+                nFMT(++curfmt);
+        waitforReady();
+
+        finish.set(true);
+
     }
 }

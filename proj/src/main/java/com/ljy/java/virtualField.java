@@ -1,5 +1,8 @@
 package com.ljy.java;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 class dPoint{
     dPoint(double x, double y){ this.x = x; this.y = y; }
     double x;
@@ -15,8 +18,9 @@ class iPoint{
 
 public class virtualField {
     public static int width=10;     //战场大小
-    public static int height=10;
+    public static int height=7;
     public static Charactor[][] cmap;
+    public static Lock cmaplock = new ReentrantLock();
 
     public static void initial()
     {
@@ -36,11 +40,11 @@ public class virtualField {
 
     /** 画布上的横坐标转化为将虚拟横坐标*/
     public static int rxTovx(double rx)
-    { return (int)rx/Configs.B_SIZE; }
+    { return (int)(rx-Configs.LEFT_MARGIN+Configs.B_SIZE/2)/Configs.B_SIZE; }
 
     /** 将画布上的纵坐标转化为虚拟纵坐标*/
     public static int ryTovy(double ry)
-    { return (int)ry/Configs.B_SIZE; }
+    { return (int)(ry-Configs.TOP_MARAGIN+Configs.B_SIZE/2)/Configs.B_SIZE; }
 
     /** 将虚拟坐标转化为画布上的坐标*/
     public static iPoint vpTorp(int vx, int vy)
@@ -58,18 +62,22 @@ public class virtualField {
     /**
      * 将战场的某一个方格设置为某个角色或清空
      * @param chat 角色
-     * @param x 虚拟横坐标
-     * @param y 虚拟纵坐标
-     * @param clean 是否清空此方格
+     * @param ox 虚拟原横坐标
+     * @param oy 虚拟原纵坐标
+     * @param x 虚拟目的横坐标
+     * @param y 虚拟目的纵坐标
      */
-    public static synchronized void set(Charactor chat, double x, double y, boolean clean)
+    public static void set(Charactor chat, double ox, double oy,  double x, double y)
     {
         iPoint vloc = rpTovp(x+Configs.B_SIZE/2,y+Configs.B_SIZE/2);
+        iPoint vold = rpTovp(ox+Configs.B_SIZE/2,oy+Configs.B_SIZE/2);
+//        System.out.printf("%s: from (%d, %d) to (%d, %d)\n", chat.name, vold.x, vold.y, vloc.x, vloc.y);
         if(vloc.x<0 || vloc.y<0 || vloc.x>=width || vloc.y>=height)
             return;
-        if(clean)
-            cmap[vloc.y][vloc.x] = null;
-        else
-            cmap[vloc.y][vloc.x] = chat;
+        cmaplock.lock();
+        if(!(vold.x<0 || vold.y<0 || vold.x>=width || vold.y>=height))
+            cmap[vold.y][vold.x] = null;
+        cmap[vloc.y][vloc.x] = chat;
+        cmaplock.unlock();
     }
 }

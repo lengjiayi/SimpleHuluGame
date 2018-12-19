@@ -74,7 +74,30 @@ class Scorpion extends Charactor
         for(int i=0;i<troops.length;i++)
             troops[i]=new Roro(sx, sy, nx, ny, i);
     }
-    public void changeFMT(int index)                             //蝎子精改变阵型，并且要求喽罗们按照新阵型站队
+
+    public boolean checkFmtValid(int index)
+    {
+        index=index%learnedFormations.length;
+        if(index<0)
+            index = learnedFormations.length-1;
+        int vx=virtualField.width-learnedFormations[index].rightDistance-2;
+        int vy=(virtualField.height-1)/2;
+        if(virtualField.cmap[vy][vx] != null && !virtualField.cmap[vy][vx].monster)
+            return false;
+        for(int i=0;i<troops.length;i++) {
+            int Rorovx=vx+learnedFormations[index].RelativePosition[i][0];
+            int Rorovy=vy+learnedFormations[index].RelativePosition[i][1];
+            if(troops[i].alive)
+            {
+                if(virtualField.cmap[Rorovy][Rorovx] != null && !virtualField.cmap[Rorovy][Rorovx].monster)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /** 蝎子精改变阵型，并且要求喽罗们按照新阵型站队*/
+    public void changeFMT(int index)
     {
         if(!alive)        //如果蝎子精战死则所有喽啰群龙无首，不再移动
             return;
@@ -95,5 +118,15 @@ class Scorpion extends Charactor
                 troops[i].cmd.set(1);
             }
         }
+    }
+
+    @Override
+    protected void Attack3() {
+        for(Charactor x : troops)
+        {
+            if(x.alive && x.avaliable.getAndSet(false))
+                x.cmd.set(4);
+        }
+        super.Attack3();
     }
 }

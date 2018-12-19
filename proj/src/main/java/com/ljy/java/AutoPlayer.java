@@ -16,6 +16,7 @@ public class AutoPlayer implements Runnable {
     private Element round;
     private int countmove;
     private battleManager bmanager;
+    private Scorpion scorpion;
 
     protected ArrayList<Charactor> creatures = new ArrayList<>();
 
@@ -27,6 +28,8 @@ public class AutoPlayer implements Runnable {
 
     public void add(Charactor chat)
     {
+        if(chat instanceof Scorpion)
+            scorpion = (Scorpion) chat;
         creatures.add(chat);
     }
 
@@ -51,7 +54,7 @@ public class AutoPlayer implements Runnable {
         while(true)
         {
             try {
-                Thread.sleep(200);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -75,49 +78,77 @@ public class AutoPlayer implements Runnable {
         if(docs==null)
             return;
         waitforReady();
+
+        for(Charactor x:creatures)
+            x.automode = true;
+
         NodeList rounds=root.getChildNodes();
-        for(int i=1;i<rounds.getLength();i++)       //复现所有的回合
-        {
-            NodeList moves=rounds.item(i).getChildNodes();
-            for(int j=0;j<moves.getLength();j++) {          //复现每一回合所有的操作
-                Node thismove=moves.item(j);
-                int Chatno=Integer.parseInt(thismove.getAttributes().getNamedItem("ChatId").getNodeValue());        //被操作的人物
-                String type=thismove.getAttributes().getNamedItem("type").getNodeValue();           //操作类型
-                int value=0;
-                if(type.equals("attack"))
-                    value=Integer.parseInt(thismove.getFirstChild().getNodeValue());
-                iPoint dst=new iPoint(0,0);          //移动的目的地
-                dst.x=Integer.parseInt(thismove.getAttributes().getNamedItem("X").getNodeValue());
-                dst.y=Integer.parseInt(thismove.getAttributes().getNamedItem("Y").getNodeValue());
+        NodeList battle=rounds.item(1).getChildNodes();
+        for(int j=0;j<battle.getLength();j++) {          //复现每一回合所有的操作
+            Node thismove=battle.item(j);
 
-                Charactor tmpchat=null;
-                for(Charactor x:creatures)         //从人物列表中找到本次操作的人物
-                {
-                    if(x.IdNo==Chatno)
-                        tmpchat=x;
-                }
+            int Chatno=Integer.parseInt(thismove.getAttributes().getNamedItem("ChatId").getNodeValue());        //被操作的人物
+            int type = Integer.parseInt(thismove.getFirstChild().getNodeValue());
+            int fmt = Integer.parseInt(thismove.getAttributes().getNamedItem("fmt").getNodeValue());
+            iPoint dst = new iPoint(0,0);          //移动的目的地
+            dst.x = Integer.parseInt(thismove.getAttributes().getNamedItem("X").getNodeValue());
+            dst.y = Integer.parseInt(thismove.getAttributes().getNamedItem("Y").getNodeValue());
 
-                if(type.equals("walk"))     //执行操作
-                {
+            Charactor tmpchat=null;
+            for(Charactor x:creatures)         //从人物列表中找到本次操作的人物
+            {
+                if(x.IdNo==Chatno)
+                    tmpchat=x;
+            }
+
+            switch(type)
+            {
+                case SaveStack.SAVETYPE_MOVE:
                     tmpchat.moveto(virtualField.vpTorp(dst.x,dst.y));
                     tmpchat.cmd.set(1);
-                }
-                else
-                {
-                    System.out.println("attack"+(value+1));
-                    tmpchat.cmd.set(value+1);
-                }
-                waitforReady();
-                bmanager.stepDecrease();
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                    break;
+                case SaveStack.SAVETYPE_ATTACK1:
+                    tmpchat.cmd.set(2);
+                    break;
+                case SaveStack.SAVETYPE_ATTACK2:
+                    tmpchat.cmd.set(3);
+                    break;
+                case SaveStack.SAVETYPE_ATTACK3:
+                    tmpchat.cmd.set(4);
+                    break;
+                case SaveStack.SAVETYPE_GROUPATTACH:
+                    for(Charactor x: scorpion.troops)
+                    {
+                        if(x.alive && x.avaliable.getAndSet(false)) {
+                            x.cmd.set(2);
+                        }
+                    }
+                    if(scorpion.alive && scorpion.avaliable.getAndSet(false))
+                        scorpion.cmd.set(2);
+                    break;
+                case SaveStack.SAVETYPE_CFMT:
+                    ((Scorpion)tmpchat).changeFMT(fmt);
+                    break;
+                default:
+                    System.out.println("load type error!");
             }
-            //TODO: battle.bot.nextMove();      //一个回合结束，妖怪做出对应的动作
+
             waitforReady();
+            virtualField.cmaplock.lock();
+            for(Charactor x:creatures)
+                if(x.alive)
+                    virtualField.cmap[virtualField.ryTovy(x.PositionY.get())][virtualField.rxTovx(x.PositionX.get())] = x;
+            virtualField.cmaplock.unlock();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
+        for(Charactor x:creatures)
+            x.automode = false;
+
         bmanager.autoplaying = false;
         bmanager.bind.set(false);
     }

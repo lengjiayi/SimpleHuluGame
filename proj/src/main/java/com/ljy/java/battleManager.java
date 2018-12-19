@@ -6,6 +6,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -80,7 +81,7 @@ public class battleManager{
     {
         outLookManager.addCharactor(chat);
         creatures.add(chat);
-        if(autoPlayer!=null && !chat.monster)
+        if(autoPlayer!=null)
             autoPlayer.add(chat);
         Thread tmpthread=new Thread(chat);
         tmpthread.start();
@@ -89,19 +90,19 @@ public class battleManager{
 
     /** 添加所有的人物*/
     public void addCreatures() throws Exception {
-        addCharactor(new Grandpa(-1,4,0,9));
+        addCharactor(new Grandpa(-1,3,0, virtualField.height-1));
         Thread tmpthread;
         for(int i=0;i<7;i++) {
-            addCharactor(new CucurbitBoy(-1, 4, 1, 1 + i));
+            addCharactor(new CucurbitBoy(-1, 3, 1, i));
         }
-        Snake snake = new Snake(10,4,9,0);
+        Snake snake = new Snake(10,3,9,0);
         addCharactor(snake);
-        Scorpion scorpion = new Scorpion(10,4,9,4);
+        Scorpion scorpion = new Scorpion(10,3,9,4);
         scorpion.changeFMT(0);
         addCharactor(scorpion);
         for(Roro x:scorpion.troops)
             addCharactor(x);
-        bot = new Bot(scorpion, snake);
+        bot = new Bot(scorpion, snake, this);
     }
 
     /** 添加所有人物的攻击效果*/
@@ -186,6 +187,23 @@ public class battleManager{
                 }
 
                 bot.nextMove();
+
+                while(true)
+                {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(bot.finish.get())
+                        break;
+                }
+
+                virtualField.cmaplock.lock();
+                for(Charactor x:creatures)
+                    if(x.alive)
+                        virtualField.cmap[virtualField.ryTovy(x.PositionY.get())][virtualField.rxTovx(x.PositionX.get())] = x;
+                virtualField.cmaplock.unlock();
                 bind.set(false);
             }).start();
             stepRemain = 3;
@@ -195,7 +213,7 @@ public class battleManager{
 
     public void GameEnd(boolean monster)
     {
-        savestack.saveToFile("tmp.xml");
+//        savestack.saveToFile("tmp.xml");
         End = true;
         Platform.runLater(()-> {
             view.endMask.whoWin(monster);
@@ -203,12 +221,12 @@ public class battleManager{
             FadeTransition appear = new FadeTransition(Duration.seconds(2));
             appear.setFromValue(0.0);
             appear.setToValue(1.0);
-
+/*
             FadeTransition fade = new FadeTransition(Duration.seconds(1));
             fade.setFromValue(1.0);
             fade.setToValue(0.0);
-
-            SequentialTransition sequence = new SequentialTransition(view.endMask, appear, fade);
+*/
+            SequentialTransition sequence = new SequentialTransition(view.endMask, appear);
             sequence.play();
         });
     }

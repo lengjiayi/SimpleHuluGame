@@ -78,14 +78,14 @@ public class battleWindow extends Application{
         cabin.setFitWidth(Configs.B_SIZE);
         cabin.setFitHeight(Configs.B_SIZE);
         cabin.setLayoutX(virtualField.vxTorx(-1));
-        cabin.setLayoutY(virtualField.vyTory(4));
+        cabin.setLayoutY(virtualField.vyTory(3));
         pane.getChildren().add(cabin);
 
         ImageView cave = new ImageView(Configs.SysIcons.get(Configs.INDEX_MONSTERCAVE));
         cave.setFitWidth(Configs.B_SIZE);
         cave.setFitHeight(Configs.B_SIZE);
         cave.setLayoutX(virtualField.vxTorx(10));
-        cave.setLayoutY(virtualField.vyTory(4));
+        cave.setLayoutY(virtualField.vyTory(3));
         pane.getChildren().add(cave);
 
 
@@ -227,6 +227,9 @@ class StepHint extends Pane{
 class EndMask extends Pane
 {
     ImageView winner;
+    Label save;
+    Label close;
+
     public EndMask()
     {
         Rectangle rect = new Rectangle(Configs.WIN_WIDTH, Configs.WIN_HEIGHT);
@@ -247,6 +250,17 @@ class EndMask extends Pane
         winner.setX(Configs.WIN_WIDTH/2.0 - Configs.WIN_HEIGHT/10.0);
         winner.setY(Configs.WIN_HEIGHT*3/5.0);
         getChildren().add(winner);
+
+        ImageView closeimg = new ImageView(Configs.SysIcons.get(Configs.INDEX_CLOSE));
+        closeimg.setFitWidth(Configs.B_SIZE/2.0);
+        closeimg.setFitHeight(Configs.B_SIZE/2.0);
+        close = new Label("",closeimg);
+        close.setLayoutX(Configs.WIN_WIDTH - Configs.B_SIZE/2.0);
+        close.setOnMouseClicked((MouseEvent e)->{ System.exit(0); });
+        close.setOnMouseEntered((MouseEvent e)->{ closeimg.setImage(Configs.SysIcons.get(Configs.INDEX_DCLOSE)); });
+        close.setOnMouseExited((MouseEvent e)->{ closeimg.setImage(Configs.SysIcons.get(Configs.INDEX_CLOSE)); });
+        getChildren().add(close);
+
     }
 
     /**

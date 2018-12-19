@@ -53,7 +53,8 @@ public final class Configs {
     public static int BOTTOM_MARAGIN;
     public static int LEFT_MARGIN;
     public static int RIGHT_MARGIN;
-    public static int B_NUM;
+    public static int B_WNUM;
+    public static int B_HNUM;
     public static int B_SIZE;
     public static int SBAR_WIDTH;
     public static int SBAR_HEIGHT;
@@ -107,12 +108,16 @@ public final class Configs {
         TOP_MARAGIN = (int)(0.05 * WIN_HEIGHT);
         BOTTOM_MARAGIN = (int)(0.1 * WIN_HEIGHT);
 
-        B_NUM = 10;
-        B_SIZE = (WIN_HEIGHT - TOP_MARAGIN - BOTTOM_MARAGIN)/B_NUM;
+        B_SIZE = (WIN_HEIGHT - TOP_MARAGIN - BOTTOM_MARAGIN)/10;
+        B_HNUM = 7;
+        B_WNUM = 10;
+
+        TOP_MARAGIN += B_SIZE;
 
         LEFT_MARGIN = SBAR_WIDTH + B_SIZE + 25;
         RIGHT_MARGIN = (int)(B_SIZE *1.5);
-        WIN_WIDTH = LEFT_MARGIN + 10*B_SIZE +RIGHT_MARGIN;
+        WIN_WIDTH = LEFT_MARGIN + B_WNUM*B_SIZE +RIGHT_MARGIN;
+        WIN_HEIGHT -= B_SIZE;
 
         CIBAR_HEIGHT = B_SIZE*2;
         CIBAR_WIDTH = B_SIZE*6;

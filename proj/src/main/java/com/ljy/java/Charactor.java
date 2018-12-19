@@ -20,7 +20,7 @@ public class Charactor implements Runnable {
     /** 在Configs和ViewBundle中的下标*/
     public int IdNo;
     /** 角色移动速度*/
-    protected int speed=3;
+    protected int speed=5;
     /** 角色资源名（用于获取图片等资源）*/
     public String basename;
     /** 角色姓名*/
@@ -33,6 +33,7 @@ public class Charactor implements Runnable {
     public boolean remoteattack=false;
     /** 是否为治疗系角色*/
     public boolean heal=false;
+    public boolean automode = false;
 
     //MARK: battle relative
     /** 战斗属性*/
@@ -116,9 +117,10 @@ public class Charactor implements Runnable {
     protected void WalkToDst()
     {
         avaliable.set(false);
-        virtualField.set(this, PositionX.get(), PositionY.get(),true);
         double dx,dy;
         double realspeed=(double)speed/36;
+        if(automode)
+            realspeed=(double)20/36;
         dx=(DstX-PositionX.get());
         dy=(DstY-PositionY.get());
         double distance=Math.sqrt(dx*dx+dy*dy);
@@ -128,7 +130,9 @@ public class Charactor implements Runnable {
         double curx=PositionX.get();
         double cury=PositionY.get();
 
-        virtualField.set(this, DstX, DstY,false);
+//        virtualField.set(this, DstX, DstY,false);
+//        virtualField.set(this, PositionX.get(), PositionY.get(),true);
+        virtualField.set(this, PositionX.get(), PositionY.get(), DstX, DstY);
         for(int i=0;i<TimeConsume;i++) {
             curx+=dx;
             cury+=dy;
@@ -196,7 +200,7 @@ enum CucurbitBoys{
     static protected int[] HP={120,90,80,60,100,150,60};        //每种葫芦娃的属性值保存在这四个数组中
     static protected int[] regularcost={10,10,5,20,20,30,10};
     static protected int[] MPcost={20,40,20,40,30,20,20};
-    static protected int[] ZXCcost={90,70,80,100,90,60,50};
+    static protected int[] ZXCcost={90,70,80,90,90,60,50};
     public String getName(){ return names[ordinal()]; }
     public String getColor(){ return colors[ordinal()]; }
     public boolean IsRemote(){ return isremote[ordinal()]; }

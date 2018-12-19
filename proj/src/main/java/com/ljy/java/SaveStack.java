@@ -19,14 +19,18 @@ import java.util.Properties;
 public class SaveStack {
 
     public static final int SAVETYPE_MOVE = 0;
-    public static final int SAVETYPE_ATTACK1 = 1;
-    public static final int SAVETYPE_ATTACK2 = 2;
-    public static final int SAVETYPE_ATTACK3 = 3;
+    public static final int SAVETYPE_CFMT = 1;
+    public static final int SAVETYPE_ATTACK1 = 2;
+    public static final int SAVETYPE_ATTACK2 = 3;
+    public static final int SAVETYPE_ATTACK3 = 4;
+    public static final int SAVETYPE_GROUPATTACH = 5;
+
+    private boolean newround = true;
+    private int countmove = 0;
 
     private Document docs;
     private Element root;
     private Element round;
-    private int countmove;
 
     public SaveStack()
     {
@@ -53,6 +57,11 @@ public class SaveStack {
         }
     }
 
+
+    public void addMove(int chatId, int dstx, int dsty, int type)
+    {
+        addMove(chatId, dstx, dsty, type, 0);
+    }
     /**
      * 添加一次操作信息
      * @param chatId 角色ID
@@ -60,33 +69,29 @@ public class SaveStack {
      * @param dsty 移动目的地纵坐标
      * @param type 操作类型
      */
-    public void addMove(int chatId, int dstx, int dsty, int type)
+    public void addMove(int chatId, int dstx, int dsty, int type, int fmt)
     {
-        countmove=countmove%3;
-        if(countmove==0) {
+        if(newround) {
             if(round!=null)
                 root.appendChild(round);
-            round = docs.createElement("round");
-        }Element move=docs.createElement("move");
-        if(type != SAVETYPE_MOVE)
-            move.setAttribute("type","attack");
-        else
-            move.setAttribute("type","walk");
+            round = docs.createElement("battle");
+            newround = false;
+        }
+        Element move=docs.createElement("move");
+        move.setAttribute("fmt",Integer.toString(fmt));
         move.setAttribute("ChatId",Integer.toString(chatId));
         move.setAttribute("Y",Integer.toString(dsty));
         move.setAttribute("X",Integer.toString(dstx));
         Text m=docs.createTextNode(Integer.toString(type));
         move.appendChild(m);
         round.appendChild(move);
-        countmove++;
     }
 
     /** 将战斗过程写入文件*/
     public void saveToFile(String saveto){        //写入文件
-        if (saveto == null)
+        if (saveto == null || round==null)
             return;
-        if(countmove!=0)
-            root.appendChild(round);
+        root.appendChild(round);
         try{
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();

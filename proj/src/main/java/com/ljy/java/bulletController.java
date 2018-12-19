@@ -55,10 +55,20 @@ public class bulletController{
             if(target != null)
                 target.injured(injuery);
             try {
-                if(type == ATTACK_AOE_1 || type == ATTACK_AOE_2 || type == ATTACK_AOE_3)
-                    Thread.sleep(100);
+                if (type == ATTACK_AOE_1 || type == ATTACK_AOE_2 || type == ATTACK_AOE_3)
+                {
+                    if (chat.automode)
+                        Thread.sleep(20);
+                    else
+                        Thread.sleep(100);
+                }
                 else
-                    Thread.sleep(300);
+                {
+                    if (chat.automode)
+                        Thread.sleep(50);
+                    else
+                        Thread.sleep(300);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -81,7 +91,9 @@ public class bulletController{
             }
             aimx = Math.min(aimx, virtualField.width-1);
             rcur.x -= Configs.B_SIZE/2;
-            duration = 2+(aimx - cur.x + 1) * 5;     //攻击飞行时间和距离成正比
+            duration = 2+(aimx - cur.x + 1) * 3;     //攻击飞行时间和距离成正比
+            if(chat.automode)
+                duration /= 4;
             deltaloc=(aimx - cur.x + 0.5)*Configs.B_SIZE/(double)duration;
         }
         else
@@ -98,6 +110,8 @@ public class bulletController{
             aimx = Math.max(0,aimx);
             rcur.x += Configs.B_SIZE/2;
             duration = 2+(cur.x - aimx +1) * 5;
+            if(chat.automode)
+                duration /= 4;
             deltaloc = -(cur.x - aimx)*Configs.B_SIZE/(double)duration;
         }
         target=virtualField.cmap[cur.y][aimx];
