@@ -99,7 +99,7 @@ _为了增强游戏体验，读取进度时角色移动动画和攻击动画都�
 <br>
 <br>
 <br> 
- ## 2.设计思路
+## 2.设计思路
 &nbsp;&nbsp;&nbsp;&nbsp;此版本和之前版本设计思路完全不同，采用了MVC设计模式，javaFx开发框架。下面从Model, View和Control三个方面简述设计思路。
 ### 2.1 资源管理
 &nbsp;&nbsp;&nbsp;&nbsp;为了方便资源管理，将程序需要的所有属性和资源都封装到抽象类**Configs**和**ViewBundle**中。

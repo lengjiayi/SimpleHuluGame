@@ -21,6 +21,7 @@ public class battleManager{
     /** 当前控制的阵营*/
     boolean monster = true;
     boolean autofight = false;
+    boolean twoplayer = false;
     int player = 1;
     /** 机器人玩家*/
     mBot mBot = null;
@@ -38,12 +39,13 @@ public class battleManager{
     static final int ACTION_CLICKED = 0;
     static final int ACTION_MOVEABOVE = 1;
 
-    public battleManager(battleWindow view, String loadfile, boolean monster, boolean autofight)
+    public battleManager(battleWindow view, String loadfile, boolean monster, boolean autofight, boolean twoplayer)
     {
         this.view = view;
         this.loadfile = loadfile;
         this.monster = monster;
         this.autofight = autofight;
+        this.twoplayer = twoplayer;
         if(loadfile!=null)
             autoplaying = true;
         outLookManager = new OutLookManager(this);
@@ -63,6 +65,7 @@ public class battleManager{
         t.start();
         t = new Thread(()->{
             for(Charactor x:creatures) {
+                x.visible.set(true);
                 x.cmd.set(1);
                 try {
                     Thread.sleep(500);
@@ -96,17 +99,17 @@ public class battleManager{
 
     /** 添加所有的人物*/
     public void addCreatures() throws Exception {
-        Grandpa grandpa = new Grandpa(-1,3,0,virtualField.height-1);
+        Grandpa grandpa = new Grandpa(0,3,0,virtualField.height-1);
         addCharactor(grandpa);
         CucurbitBoy[] brothers = new CucurbitBoy[7];
         for(int i=0;i<7;i++) {
-            brothers[i] = new CucurbitBoy(-1, 3, 1, i);
+            brothers[i] = new CucurbitBoy(0, 3, 1, i);
             addCharactor(brothers[i]);
         }
         hBot = new hBot(brothers, grandpa, this);
-        Snake snake = new Snake(10,3,9,0);
+        Snake snake = new Snake(9,3,9,0);
         addCharactor(snake);
-        Scorpion scorpion = new Scorpion(10,3,9,4);
+        Scorpion scorpion = new Scorpion(9,3,9,4);
         scorpion.changeFMT(0);
         addCharactor(scorpion);
         for(Roro x:scorpion.troops)
@@ -154,14 +157,15 @@ public class battleManager{
         if(type == ACTION_CLICKED) {
             if(ChatSelected!=null && ChatSelected.monster!=monster)
                 ChatSelected = null;
-            //TODO: move curChat to this location
+            //MARK: move curChat to this location
             if(!bind.get() && ChatSelected != null)
             {
                 savestack.addMove(ChatSelected.IdNo, loc.x, loc.y, SaveStack.SAVETYPE_MOVE);
                 ChatSelected.moveto(virtualField.vpTorp(loc.x, loc.y));
                 ChatSelected.cmd.set(1);
-                ChatSelected = null;
+//                ChatSelected = null;
                 stepDecrease();
+                return ChatSelected;
             }
         }
         return null;
@@ -173,7 +177,7 @@ public class battleManager{
         if(End.get())
             return;
         stepRemain--;
-        view.hint.set(stepRemain);
+        view.hint.set(stepRemain, monster);
         if(stepRemain==0)
         {
             bind.set(true);
@@ -199,22 +203,23 @@ public class battleManager{
                         break;
                 }
 
-                if(!monster)
-                    mBot.nextMove();
-                else
-                    hBot.nextMove();
-
-                while(true)
-                {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                if(!twoplayer) {
+                    if (!monster)
+                        mBot.nextMove();
+                    else
+                        hBot.nextMove();
+                    while(true)
+                    {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if(!monster && mBot.finish.get())
+                            break;
+                        if(monster && hBot.finish.get())
+                            break;
                     }
-                    if(!monster && mBot.finish.get())
-                        break;
-                    if(monster && hBot.finish.get())
-                        break;
                 }
 
                 virtualField.cmaplock.lock();
@@ -224,8 +229,11 @@ public class battleManager{
                 virtualField.cmaplock.unlock();
                 bind.set(false);
             }).start();
+            //MARK: 切换玩家
+            if(twoplayer)
+                monster = !monster;
             stepRemain = monster?2:3;
-            view.hint.set(stepRemain);
+            view.hint.set(stepRemain, monster);
         }
     }
 

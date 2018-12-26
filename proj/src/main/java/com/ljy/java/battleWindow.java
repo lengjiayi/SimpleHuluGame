@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -26,7 +27,7 @@ public class battleWindow extends Application{
     Canvas canvas;
     SelectionBar sbar;
     CInfoBar cibar;
-    Rectangle BlockMask;
+    Ellipse BlockMask;
     StepHint hint;
     Label save;
     Label close;
@@ -38,6 +39,7 @@ public class battleWindow extends Application{
     String loadfile;
     boolean monster = false;
     boolean autofight = false;
+    boolean twoplayer = false;
 
 
     public void switchShow(String loadfile, int playtype) throws Exception
@@ -55,6 +57,9 @@ public class battleWindow extends Application{
                 case prepareWindow.PLAYMODE_GOD:
                     autofight = true;
                     break;
+                case prepareWindow.PLAYMODE_TWOPLAYER:
+                    twoplayer = true;
+                    break;
             }
         }
         loadComponents();
@@ -68,6 +73,13 @@ public class battleWindow extends Application{
         bg.setFitHeight(Configs.WIN_HEIGHT);
         pane.getChildren().add(bg);
 
+        ImageView battlefield = new ImageView(Configs.SysIcons.get(Configs.INDEX_BATTLEFIELD));
+        battlefield.setFitWidth(Configs.B_SIZE*Configs.B_WNUM);
+        battlefield.setFitHeight(Configs.B_SIZE*Configs.B_HNUM);
+        battlefield.setLayoutX(Configs.LEFT_MARGIN);
+        battlefield.setLayoutY(Configs.TOP_MARAGIN);
+        pane.getChildren().add(battlefield);
+
         sbar = new SelectionBar();
         sbar.setLayoutX(-Configs.SBAR_WIDTH);
         sbar.setLayoutY((Configs.WIN_HEIGHT-Configs.SBAR_HEIGHT)/2.0);
@@ -76,20 +88,18 @@ public class battleWindow extends Application{
         cibar.setLayoutX(Configs.LEFT_MARGIN + Configs.B_SIZE*5 - Configs.CIBAR_WIDTH/2.0);
         cibar.setLayoutY(Configs.WIN_HEIGHT);
 
-        BlockMask = new Rectangle(Configs.B_SIZE,Configs.B_SIZE);
-        BlockMask.setArcHeight(10);
-        BlockMask.setArcWidth(10);
+        BlockMask = new Ellipse(Configs.B_SIZE, Configs.B_SIZE/2);
         BlockMask.setFill(new Color(0.8,0.8,0.8,0.6));
         pane.getChildren().add(BlockMask);
 
         canvas = new Canvas(Configs.WIN_WIDTH, Configs.WIN_HEIGHT);
-        manager = new battleManager(this, loadfile, monster, autofight);
+        manager = new battleManager(this, loadfile, monster, autofight, twoplayer);
         sbar.bmanager = manager;
 
         canvas.setLayoutX(0);
         canvas.setLayoutY(0);
         pane.getChildren().add(canvas);
-
+/*
         ImageView cabin = new ImageView(Configs.SysIcons.get(Configs.INDEX_HUMANCABIN));
         cabin.setFitWidth(Configs.B_SIZE);
         cabin.setFitHeight(Configs.B_SIZE);
@@ -103,13 +113,13 @@ public class battleWindow extends Application{
         cave.setLayoutX(virtualField.vxTorx(10));
         cave.setLayoutY(virtualField.vyTory(3));
         pane.getChildren().add(cave);
-
+*/
 
         hint = new StepHint();
         hint.setLayoutX(Configs.LEFT_MARGIN + Configs.B_SIZE*4);
         hint.setLayoutY(Configs.TOP_MARAGIN/2);
         if(monster)
-            hint.set(2);
+            hint.set(2, monster);
         pane.getChildren().add(hint);
 
         ImageView saveimg = new ImageView(Configs.SysIcons.get(Configs.INDEX_SAVE));
@@ -143,29 +153,34 @@ public class battleWindow extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         pane.setOnMouseMoved((MouseEvent e)->{
-            iPoint vloc = virtualField.rpTovp(e.getX(), e.getY());
-            if(vloc.x<0) vloc.x=0;
-            if(vloc.x>=virtualField.width) vloc.x=virtualField.width-1;
-            if(vloc.y<0) vloc.y=0;
-            if(vloc.y>=virtualField.height) vloc.y=virtualField.height-1;
-            iPoint rloc = virtualField.vpTorp(vloc.x, vloc.y);
-            BlockMask.setLayoutX(rloc.x);
-            BlockMask.setLayoutY(rloc.y);
-            vloc = virtualField.rpTovp(e.getX(), e.getY());
-            if (vloc.x < 0 || vloc.x >= virtualField.width || vloc.y < 0 || vloc.y >= virtualField.height)
-                return;
-            cibar.reSet(manager.newAction(vloc, battleManager.ACTION_MOVEABOVE));
+            //MARK: 将高亮块进行透视映射
+            for(int j=0;j<Configs.B_HNUM;j++)
+                for(int i=0;i<Configs.B_WNUM;i++)
+                {
+                    Block block = Configs.IsInBlock(e.getX(), e.getY(), i, j);
+                    if(block != null)
+                    {
+                        BlockMask.setRadiusX(block.twidth/8 + block.bwidth*3/8);
+                        BlockMask.setRadiusY(block.height/4);
+                        BlockMask.setCenterX(block.tx*3/4 + block.bx/4 + block.twidth/8 + block.bwidth*3/8);
+                        BlockMask.setCenterY(block.y + block.height*3/4);
+                        cibar.reSet(manager.newAction(new iPoint(i,j), battleManager.ACTION_MOVEABOVE));
+                        return;
+                    }
+                }
         });
         pane.setOnMouseClicked((MouseEvent e)-> {
             iPoint vloc = virtualField.rpTovp(e.getX(), e.getY());
-            if (vloc.x < 0 || vloc.x >= virtualField.width || vloc.y < 0 || vloc.y >= virtualField.height)
-            {
-                //TODO: unselected
-            }
-            else
-            {
-                sbar.reSet(manager.newAction(vloc, battleManager.ACTION_CLICKED));
-            }
+            for(int j=0;j<Configs.B_HNUM;j++)
+                for(int i=0;i<Configs.B_WNUM;i++)
+                {
+                    Block block = Configs.IsInBlock(e.getX(), e.getY(), i, j);
+                    if(block != null)
+                    {
+                        sbar.reSet(manager.newAction(new iPoint(i,j), battleManager.ACTION_CLICKED));
+                        return;
+                    }
+                }
         });
         pane.setOnMousePressed((MouseEvent e)->{
             xOffset = e.getSceneX();
@@ -194,24 +209,38 @@ class StepHint extends Pane{
     Circle c1;
     Circle c2;
     Circle c3;
+    private boolean monster;
     public StepHint()
     {
-        c1 = new Circle(Configs.HINT_RADUIS,Color.color(0.1,0.8,0.8));
+        c1 = new Circle(Configs.HINT_RADUIS,Color.color(0.9,0.2,0.3));
         c1.setCenterX(Configs.HINT_RADUIS);
         c1.setCenterY(Configs.HINT_RADUIS);
-        c2 = new Circle(Configs.HINT_RADUIS,Color.color(0.1,0.8,0.8));
+        c2 = new Circle(Configs.HINT_RADUIS,Color.color(0.9,0.2,0.3));
         c2.setCenterX(Configs.HINT_PADDING + Configs.HINT_RADUIS);
         c2.setCenterY(Configs.HINT_RADUIS);
-        c3 = new Circle(Configs.HINT_RADUIS,Color.color(0.1,0.8,0.8));
+        c3 = new Circle(Configs.HINT_RADUIS,Color.color(0.9,0.2,0.3));
         c3.setCenterX(Configs.HINT_PADDING + Configs.HINT_PADDING + Configs.HINT_RADUIS);
         c3.setCenterY(Configs.HINT_RADUIS);
         getChildren().add(c1);
         getChildren().add(c2);
         getChildren().add(c3);
     }
-    public void set(int value)
+    public void set(int value, boolean monster)
     {
+        this.monster = monster;
         Platform.runLater(()->{
+            if(monster)
+            {
+                c1.setFill(Color.BLACK);
+                c2.setFill(Color.BLACK);
+                c3.setFill(Color.BLACK);
+            }
+            else
+            {
+                c1.setFill(Color.color(0.9,0.2,0.3));
+                c2.setFill(Color.color(0.9,0.2,0.3));
+                c3.setFill(Color.color(0.9,0.2,0.3));
+            }
             switch (value)
             {
                 case 0:
@@ -251,7 +280,7 @@ class EndMask extends Pane
     public EndMask()
     {
         Rectangle rect = new Rectangle(Configs.WIN_WIDTH, Configs.WIN_HEIGHT);
-        rect.setFill(Color.color(0,0,0,0.5));
+        rect.setFill(Color.color(1.0,1.0,1.0, 0.8));
         rect.setStroke(null);
         getChildren().add(rect);
 

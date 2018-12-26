@@ -32,9 +32,12 @@ public class CInfoBar extends Pane {
     {
         bg = new Rectangle(Configs.CIBAR_WIDTH, Configs.CIBAR_HEIGHT+20);
         LinearGradient gradient = new LinearGradient(0,0,0,1.0,true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.color(38/256.0,140/256.0,136/256.0,0.5)),
-                new Stop(0.3,Color.color(38/256.0,144/256.0,136/256.0,0.6)),
-                new Stop(1,Color.color(38/256.0,144/256.0,136/256.0,0.1)));
+                new Stop(0, Color.color(138/256.0,140/256.0,136/256.0,0.5)),
+                new Stop(0.3,Color.color(0.0,0.0,0.0,0.6)),
+                new Stop(1,Color.color(138/256.0,144/256.0,136/256.0,0.1)));
+//                new Stop(0, Color.color(38/256.0,140/256.0,136/256.0,0.5)),
+//                new Stop(0.3,Color.color(38/256.0,144/256.0,136/256.0,0.6)),
+//                new Stop(1,Color.color(38/256.0,144/256.0,136/256.0,0.1)));
         bg.setArcWidth(20);
         bg.setArcHeight(20);
         bg.setFill(gradient);
@@ -43,7 +46,8 @@ public class CInfoBar extends Pane {
 
         name = new Text("default");
         name.setFont(Font.font(23));
-        name.setFill(Color.color(255/256.0,215/256.0,0.0,1.0));
+//        name.setFill(Color.color(255/256.0,215/256.0,0.0,1.0));
+        name.setFill(Color.color(245/256.0,225/256.0,10/256.0,1.0));
         name.setTextAlignment(TextAlignment.CENTER);
         name.setLayoutX(Configs.CIBAR_WIDTH/3.0);
         name.setLayoutY(Configs.CIBAR_HEIGHT/3.0);

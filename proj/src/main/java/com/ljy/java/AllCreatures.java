@@ -19,6 +19,15 @@ class CucurbitBoy extends Charactor
     }
 }
 
+@IsCharactor(name = "爷爷",
+        group = "人类",
+        HP = 80,
+        MP = 100,
+        REGcost = 30,
+        AOEcost = 30,
+        ZXCcost = 100,
+        heal = true,
+        remote = true)
 class Grandpa extends Charactor
 {
     public Grandpa(int sx, int sy, int nx, int ny)
@@ -31,6 +40,15 @@ class Grandpa extends Charactor
     }
 }
 
+@IsCharactor(name = "蛇精",
+        group = "妖怪",
+        HP = 70,
+        MP = 100,
+        REGcost = 30,
+        AOEcost = 50,
+        ZXCcost = 100,
+        heal = true,
+        remote = false)
 class Snake extends Charactor
 {
     public Snake(int sx, int sy, int nx, int ny)
@@ -43,6 +61,15 @@ class Snake extends Charactor
     }
 }
 
+@IsCharactor(name = "小喽啰",
+        group = "妖怪",
+        HP = 60,
+        MP = 100,
+        REGcost = 10,
+        AOEcost = 0,
+        ZXCcost = 30,
+        heal = false,
+        remote = true)
 class Roro extends Charactor
 {
     int innerIndex=0;

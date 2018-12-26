@@ -27,6 +27,7 @@ public class prepareWindow extends Application {
     static final int PLAYMODE_HUMAN =0;
     static final int PLAYMODE_MONSTER =1;
     static final int PLAYMODE_GOD =2;
+    static final int PLAYMODE_TWOPLAYER =3;
 
     public void switchShow() throws Exception
     {
@@ -48,6 +49,8 @@ public class prepareWindow extends Application {
 
     private void loadComponents()
     {
+        stage.setWidth(600);
+        stage.setHeight(300);
         ImageView bg = new ImageView(Configs.SysIcons.get(Configs.INDEX_PREPAREGACKGROUND));
         bg.setFitWidth(600);
         bg.setFitHeight(300);
@@ -87,7 +90,9 @@ public class prepareWindow extends Application {
         tpmode.setMaxSize(150,50);
         tpmode.setLayoutX(225);
         tpmode.setLayoutY(100);
-        tpmode.setOnMouseClicked((MouseEvent e)->{ SwitchWindows(PLAYMODE_MONSTER); });
+        tpmode.setOnMouseEntered((MouseEvent e)->{ tpmodeImg.setImage(Configs.SysIcons.get(Configs.INDEX_TWOPLAYER2)); });
+        tpmode.setOnMouseExited((MouseEvent e)->{ tpmodeImg.setImage(Configs.SysIcons.get(Configs.INDEX_TWOPLAYER)); });
+        tpmode.setOnMouseClicked((MouseEvent e)->{ SwitchWindows(PLAYMODE_TWOPLAYER); });
         pane.getChildren().add(tpmode);
 
         ImageView automodeImg = new ImageView(Configs.SysIcons.get(Configs.INDEX_AUTOPLAY));
@@ -98,6 +103,8 @@ public class prepareWindow extends Application {
         automode.setMaxSize(150,50);
         automode.setLayoutX(225);
         automode.setLayoutY(200);
+        automode.setOnMouseEntered((MouseEvent e)->{ automodeImg.setImage(Configs.SysIcons.get(Configs.INDEX_AUTOPLAY2)); });
+        automode.setOnMouseExited((MouseEvent e)->{ automodeImg.setImage(Configs.SysIcons.get(Configs.INDEX_AUTOPLAY)); });
         automode.setOnMouseClicked((MouseEvent e)->{ SwitchWindows(PLAYMODE_GOD); });
         pane.getChildren().add(automode);
     }

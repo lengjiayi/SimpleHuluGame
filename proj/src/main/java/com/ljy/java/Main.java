@@ -23,6 +23,8 @@ public class Main extends Application {
         virtualField.initial();
         Configs.initialize();
         ViewBundle.initialize();
+        if(!HintGenerater.GenerateHintDoc())
+            System.out.println("生成属性文件失败");
         loadComponents();
     }
 

@@ -3,6 +3,7 @@ package com.ljy.java;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -34,8 +35,9 @@ public class SelectionBar extends Pane{
         getChildren().add(bg);
 
         curName = new Text("空");
-        curName.setFont(Font.font("华文楷体", FontWeight.BOLD, 35));
-        curName.setFill(new Color(255/256.0,215/256.0,0.0,1.0));
+        curName.setFont(Font.font("楷体", FontWeight.BOLD, 35));
+//        curName.setFill(new Color(255/256.0,215/256.0,0.0,1.0));
+        curName.setFill(Color.BLACK);
         curName.setTextAlignment(TextAlignment.CENTER);
         curName.setY(Configs.SBAR_HEIGHT/5);
         curName.setX(Configs.SBAR_WIDTH/4);
@@ -46,12 +48,15 @@ public class SelectionBar extends Pane{
         regularAttack = new Label("",regImg);
         regularAttack.setLayoutY(Configs.SBAR_HEIGHT/5*2 - Configs.SBAR_HEIGHT/10);
         regularAttack.setLayoutX(Configs.SBAR_WIDTH/10);
+        regularAttack.setOnMouseEntered((MouseEvent e)->{ regImg.setImage(Configs.SysIcons.get(Configs.INDEX_B_ATTACK12)); });
+        regularAttack.setOnMouseExited((MouseEvent e)->{ regImg.setImage(Configs.SysIcons.get(Configs.INDEX_B_ATTACK1)); });
         regularAttack.setOnMouseClicked((MouseEvent)->{
             if(curChat!=null && curChat.avaliable.getAndSet(false) && (bmanager==null || !bmanager.bind.get())) {
                 if(bmanager!=null)
                     bmanager.stepDecrease();
                 bmanager.savestack.addMove(curChat.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK1);
                 curChat.cmd.set(2);
+                reSet(null);
             }
         });
 
@@ -61,12 +66,15 @@ public class SelectionBar extends Pane{
         AOEAttack = new Label("",aoeImg);
         AOEAttack.setLayoutY(Configs.SBAR_HEIGHT/5*3 - Configs.SBAR_HEIGHT/10);
         AOEAttack.setLayoutX(Configs.SBAR_WIDTH/10);
+        AOEAttack.setOnMouseEntered((MouseEvent e)->{ aoeImg.setImage(Configs.SysIcons.get(Configs.INDEX_B_ATTACK22)); });
+        AOEAttack.setOnMouseExited((MouseEvent e)->{ aoeImg.setImage(Configs.SysIcons.get(Configs.INDEX_B_ATTACK2)); });
         AOEAttack.setOnMouseClicked((MouseEvent)->{
             if(curChat!=null && curChat.avaliable.getAndSet(false) && (bmanager==null || !bmanager.bind.get())) {
                 if(bmanager!=null)
                     bmanager.stepDecrease();
                 bmanager.savestack.addMove(curChat.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK2);
                 curChat.cmd.set(3);
+                reSet(null);
             }
         });
 
@@ -76,12 +84,15 @@ public class SelectionBar extends Pane{
         ZXCAttack = new Label("",zxcImg);
         ZXCAttack.setLayoutY(Configs.SBAR_HEIGHT/5*4 - Configs.SBAR_HEIGHT/10);
         ZXCAttack.setLayoutX(Configs.SBAR_WIDTH/10);
+        ZXCAttack.setOnMouseEntered((MouseEvent e)->{ zxcImg.setImage(Configs.SysIcons.get(Configs.INDEX_B_ATTACK32)); });
+        ZXCAttack.setOnMouseExited((MouseEvent e)->{ zxcImg.setImage(Configs.SysIcons.get(Configs.INDEX_B_ATTACK3)); });
         ZXCAttack.setOnMouseClicked((MouseEvent)->{
             if(curChat!=null && curChat.avaliable.getAndSet(false) && (bmanager==null || !bmanager.bind.get())) {
                 if(bmanager!=null)
                     bmanager.stepDecrease();
                 bmanager.savestack.addMove(curChat.IdNo, 0, 0, SaveStack.SAVETYPE_ATTACK3);
                 curChat.cmd.set(4);
+                reSet(null);
             }
         });
 

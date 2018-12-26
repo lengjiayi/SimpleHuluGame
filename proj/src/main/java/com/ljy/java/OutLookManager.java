@@ -50,6 +50,8 @@ public class OutLookManager implements Runnable{
                 gc.clearRect(0,0,Configs.WIN_WIDTH, Configs.WIN_HEIGHT);
             });
 
+            /*
+            //MARK: Debug Map
             Platform.runLater(()->{
             for(int j=0;j<virtualField.height;j++)
                 for(int i=0;i<virtualField.width;i++)
@@ -74,31 +76,40 @@ public class OutLookManager implements Runnable{
                     }
                 }
             });
+            */
 
             for (Charactor x : creatures) {
+                Block block = Configs.SPEC_MID_SIZE(x.PositionX.get(), x.PositionY.get());
                 if (x.alive) {
                     if (x.monster)
                         monsterExist = true;
                     else
                         humanExist = true;
-                    Platform.runLater(()->{
+                    if(x.visible.get())
+                    {
+                        Platform.runLater(() -> {
                         if (x.mov1.get())
-                            gc.drawImage(Configs.movingIcons.get(Math.min(Configs.movingIcons.size()-1,x.IdNo)),x.PositionX.get(), x.PositionY.get(),Configs.B_SIZE, Configs.B_SIZE);
+                            gc.drawImage(Configs.movingIcons.get(Math.min(Configs.movingIcons.size() - 1, x.IdNo)), block.bx, block.y, block.twidth, block.twidth);
                         else
-                            gc.drawImage(Configs.normalIcons.get(Math.min(Configs.normalIcons.size()-1,x.IdNo)),x.PositionX.get(), x.PositionY.get(),Configs.B_SIZE, Configs.B_SIZE);
-                    });
+                            gc.drawImage(Configs.normalIcons.get(Math.min(Configs.normalIcons.size() - 1, x.IdNo)), block.bx, block.y, block.twidth, block.twidth);
+                        });
+                    }
                 } else {
                     Platform.runLater(()->{
-                        gc.drawImage(Configs.SysIcons.get(Configs.INDEX_RIP),x.PositionX.get(), x.PositionY.get(),Configs.B_SIZE, Configs.B_SIZE);
+                        gc.drawImage(Configs.SysIcons.get(Configs.INDEX_RIP),block.bx, block.y,block.twidth, block.twidth);
                     });
                 }
             }
             for(Bullet x:bullets)
             {
                 if(x.visuable.get())
+                {
+                    Block block = Configs.SPEC_MID_SIZE(x.PositionX.get(), x.PositionY.get());
                     Platform.runLater(()->{
-                        gc.drawImage(x.icon,x.PositionX.get(), x.PositionY.get(),Configs.B_SIZE, Configs.B_SIZE);
+                        gc.drawImage(x.icon, block.bx, block.y,block.twidth, block.twidth);
+//                        gc.drawImage(x.icon,x.PositionX.get(), x.PositionY.get(),Configs.B_SIZE, Configs.B_SIZE);
                     });
+                }
             }
 
             if (!IsEnd && (!monsterExist || !humanExist)) {

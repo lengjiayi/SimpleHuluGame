@@ -11,6 +11,8 @@ public class Charactor implements Runnable {
     public AtomicBoolean avaliable=new AtomicBoolean(true);
     /** 用于接收命令*/
     public AtomicInteger cmd=new AtomicInteger(0);
+    /** 是否需要绘制*/
+    public AtomicBoolean visible=new AtomicBoolean(false);
     /** 是否使用移动中贴图，用于实现移动动画*/
     public AtomicBoolean mov1=new AtomicBoolean(false);
     /** 角色移动的目的地*/
@@ -144,7 +146,7 @@ public class Charactor implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(i%5==0)
+            if(i%6==0)
                 mov1.set(!mov1.get());
         }
         PositionX.set((int)DstX);
