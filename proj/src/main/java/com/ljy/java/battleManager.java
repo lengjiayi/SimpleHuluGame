@@ -164,7 +164,8 @@ public class battleManager{
                 ChatSelected.moveto(virtualField.vpTorp(loc.x, loc.y));
                 ChatSelected.cmd.set(1);
 //                ChatSelected = null;
-                stepDecrease();
+                if(!(ChatSelected instanceof Roro)) //控制喽啰移动不消耗操作数
+                    stepDecrease();
                 return ChatSelected;
             }
         }

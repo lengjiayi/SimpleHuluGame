@@ -104,11 +104,20 @@ public class OutLookManager implements Runnable{
             {
                 if(x.visuable.get())
                 {
-                    Block block = Configs.SPEC_MID_SIZE(x.PositionX.get(), x.PositionY.get());
-                    Platform.runLater(()->{
-                        gc.drawImage(x.icon, block.bx, block.y,block.twidth, block.twidth);
+                    try {
+                        Block block = Configs.SPEC_MID_SIZE(x.PositionX.get(), x.PositionY.get());
+                        Platform.runLater(() -> {
+                            gc.drawImage(x.icon, block.bx, block.y, block.twidth, block.twidth);
 //                        gc.drawImage(x.icon,x.PositionX.get(), x.PositionY.get(),Configs.B_SIZE, Configs.B_SIZE);
-                    });
+                        });
+                    }catch (Exception e)
+                    {
+                        iPoint vloc = virtualField.rpTovp(x.PositionX.get()+1, x.PositionY.get()+1);
+                        System.out.println("bullet "+x.PositionX.get()+","+ x.PositionY.get());
+                        System.out.println(vloc.x + "," + vloc.y);
+                        e.printStackTrace();
+                        throw e;
+                    }
                 }
             }
 

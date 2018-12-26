@@ -110,7 +110,7 @@ public class hBot {
         iPoint vloc;
         for (int j = 0; j < virtualField.height; j++) {
             for (int i = 0; i < virtualField.width; i++) {
-                if (virtualField.cmap[j][i] != null && virtualField.cmap[j][i].monster && i - 1 > 0) {
+                if (virtualField.cmap[j][i] != null && virtualField.cmap[j][i].alive && virtualField.cmap[j][i].monster && i - 1 > 0) {
                     target[index] = new iPoint(i - 1, j);
                     index++;
                     break;

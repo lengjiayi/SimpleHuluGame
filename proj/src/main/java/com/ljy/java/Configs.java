@@ -62,15 +62,17 @@ public final class Configs {
     private static double[] cdf;
 
     static {
-        rate = new double[]{2.50,2.65,2.79,3.00,3.21,3.39,3.56};
+        rate = new double[]{2.50,2.65,2.79,3.00,3.21,3.39,3.56,0};
         double baserate = 0;
-        cdf = new double[8];
+        cdf = new double[9];
         cdf[0] = 0;
-        for(int i=0;i<rate.length;i++)
+        for(int i=0;i<rate.length-1;i++)
         {
             baserate += rate[i];
             cdf[i+1] = baserate;
         }
+        rate[7] = rate[6];
+        cdf[8] = cdf[7];
     }
 
     /** 判断坐标(x,y)是否在row, col透视后的四边形中。*
